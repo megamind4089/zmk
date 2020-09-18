@@ -1,0 +1,8 @@
+# STM32F401CC based Black Pill V3.0 board configuration
+
+# Copyright (c) 2020 Mega Mind
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_BLACKPILL_F401CC
+	bool "WeAct Studio Black Pill F401 V3.0 Board"
+	depends on SOC_STM32F401XC

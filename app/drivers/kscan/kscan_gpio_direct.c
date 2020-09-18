@@ -111,6 +111,10 @@ static void kscan_gpio_irq_callback_handler(const struct device *dev, struct gpi
 
 static void kscan_gpio_timer_handler(struct k_timer *timer) {
     struct kscan_gpio_data *data = CONTAINER_OF(timer, struct kscan_gpio_data, poll_timer);
+    static int m = 0;
+
+    if (m++ % 500 == 0)
+        LOG_ERR("GPIO handling working");
 
     kscan_gpio_direct_queue_read(&data->work, 0);
 }
@@ -142,6 +146,11 @@ static int kscan_gpio_read(const struct device *dev) {
     const struct kscan_gpio_config *cfg = dev->config;
     uint32_t read_state = data->pin_state;
     bool submit_follow_up_read = false;
+    static int m = 0;
+
+    if (m++ % 500 == 0)
+        LOG_DBG("Data pin_state: %u", read_state);
+
     for (int i = 0; i < cfg->num_of_inputs; i++) {
         const struct device *in_dev = kscan_gpio_input_devices(dev)[i];
         const struct kscan_gpio_item_config *in_cfg = &kscan_gpio_input_configs(dev)[i];
@@ -211,6 +220,7 @@ static const struct kscan_driver_api gpio_driver_api = {
                 LOG_ERR("Unable to configure pin %d on %s for input", in_cfg->pin, in_cfg->label); \
                 return err;                                                                        \
             }                                                                                      \
+            LOG_DBG("Configuring input %d:  pin %d on %s", i, in_cfg->pin, in_cfg->label);         \
             COND_CODE_0(                                                                           \
                 IS_ENABLED(CONFIG_ZMK_KSCAN_DIRECT_POLLING),                                       \
                 (irq_callbacks_##n[i].work = &data->work; irq_callbacks_##n[i].dev = dev;          \
