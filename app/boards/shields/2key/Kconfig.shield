@@ -1,0 +1,5 @@
+# Copyright (c) 2020 Mega Mind
+# SPDX-License-Identifier: MIT
+
+config SHIELD_2KEY
+	def_bool $(shields_list_contains,2key)

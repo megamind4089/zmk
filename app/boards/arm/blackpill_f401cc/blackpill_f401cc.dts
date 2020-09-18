@@ -1,0 +1,64 @@
+/*
+ * Copyright (c) Mega Mind
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+#include <st/f4/stm32f401Xc.dtsi>
+
+/ {
+	model = "WeAct Studio Black Pill V3.0 Board F401";
+	compatible = "weact,blackpill-f401cc","st,stm32f401";
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		user_led: led {
+			gpios = <&gpioc 13 GPIO_ACTIVE_LOW>;
+			label = "User LED";
+		};
+	};
+
+	gpio_keys {
+		compatible = "gpio-keys";
+		user_button: button {
+			label = "KEY";
+			gpios = <&gpioa 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+		};
+	};
+
+	aliases {
+		led0 = &user_led;
+		sw0 = &user_button;
+	};
+};
+
+&rtc {
+	status = "okay";
+};
+
+&usbotg_fs {
+	status = "okay";
+};
+
+&flash0 {
+	/*
+	 * For more information, see:
+	 * https://docs.zephyrproject.org/latest/guides/dts/legacy-macros.html#legacy-flash-partitions
+	 */
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		storage_partition: partition@3e800 {
+			label = "storage";
+			reg = <0x0003e800 0x00001800>;
+		};
+	};
+};

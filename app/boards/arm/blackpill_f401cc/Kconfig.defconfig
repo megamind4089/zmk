@@ -1,0 +1,18 @@
+# Copyright (c) 2020 Mega Mind
+# SPDX-License-Identifier: Apache-2.0
+
+# F411CE based Black Pill F401 V3.0 board board configuration
+
+if BOARD_BLACKPILL_F401CC
+
+config BOARD
+	default "blackpill_f401cc"
+
+config SPI_STM32_INTERRUPT
+	default y
+	depends on SPI
+
+config ZMK_USB
+	default y
+
+endif # BOARD_BLACKPILL_F401CC

@@ -1,0 +1,10 @@
+# Copyright (c) 2020 Mega Mind
+# SPDX-License-Identifier: MIT
+
+if SHIELD_2KEY
+
+config ZMK_KEYBOARD_NAME
+	default "2key"
+
+endif
+
