@@ -6,5 +6,8 @@ if SHIELD_2KEY
 config ZMK_KEYBOARD_NAME
 	default "2key"
 
+config ZMK_KSCAN_GPIO_POLLING
+	default y
+
 endif
 
