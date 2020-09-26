@@ -4,4 +4,5 @@
 # west build -d build -b nrfmicro_13 -- -DSHIELD=lily58_left
 # cp ./build/zephyr/zmk.uf2 /run/media/maari/NRF52BOOT
 
-west build -d build -b blackpill_f401cc -- -DSHIELD=2key
+# west build -d build -b blackpill_f401cc -- -DSHIELD=2key
+west build -d build -b bluepill -- -DSHIELD=2key

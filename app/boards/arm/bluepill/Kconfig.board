@@ -1,0 +1,8 @@
+# STM32 Minimum Development Board Configuration
+
+# Copyright (c) 2017, embedjournal.com
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_BLUEPILL_F103C8
+	bool "WeAct Studio Blue Pill F103 V1.0 Board"
+	depends on SOC_STM32F103X8
