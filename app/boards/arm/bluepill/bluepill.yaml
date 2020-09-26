@@ -1,0 +1,16 @@
+identifier: bluepill
+name: WeAct Studio Bluepill v1.0 with USB C
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+  - xtools
+ram: 20
+supported:
+  - gpio
+  - usb
+  - i2c
+  - pwm
+  - spi
+  - adc

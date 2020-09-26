@@ -1,0 +1,60 @@
+/*
+ * Copyright (c) 2020, Mega Mind
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+#include <st/f1/stm32f103X8.dtsi>
+
+/ {
+	model = "WeAct Studio Blue Pill v1.0 Board F103";
+	compatible = "st,stm32f103c8";
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		led: led {
+			gpios = <&gpiob 2 GPIO_ACTIVE_HIGH>;
+			label = "LD";
+		};
+	};
+
+	gpio_keys {
+		compatible = "gpio-keys";
+		user_button: button {
+				 label = "KEY";
+				 gpios = <&gpioa 0 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+			 };
+	};
+
+	aliases {
+		led0 = &led;
+	};
+};
+
+&usart1 {
+	current-speed = <115200>;
+	status = "okay";
+};
+
+&i2c1 {
+	status = "disabled";
+	clock-frequency = <I2C_BITRATE_FAST>;
+};
+
+&timers1 {
+	status = "disabled";
+
+	pwm1: pwm {
+		status = "okay";
+	};
+};
+
+&usb {
+	status = "okay";
+};

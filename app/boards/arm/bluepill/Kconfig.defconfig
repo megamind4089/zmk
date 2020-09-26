@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+
+if BOARD_BLUEPILL_F103C8
+
+config BOARD
+	default "bluepill" if BOARD_BLUEPILL_F103C8
+
+config ZMK_USB
+    default y
+
+endif # BOARD_BLUEPILL_F103C8
