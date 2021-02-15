@@ -15,7 +15,8 @@ static void button_pressed(const struct device *dev, struct gpio_callback *cb,
                uint32_t pins)
 {
     const struct device *p0 = device_get_binding("GPIO_0");
-    gpio_pin_set(p0, 28, 0);
+    static int reset_count = 0;
+    if (reset_count++) gpio_pin_set(p0, 28, 0);
 
 }
 
@@ -23,11 +24,10 @@ static void configure_button(const struct device *gpio)
 {
     static struct gpio_callback button_cb;
 
-    gpio_pin_configure(gpio, 27, GPIO_INPUT);
+    gpio_pin_configure(gpio, 27, GPIO_INPUT | GPIO_PULL_UP);
     gpio_pin_interrupt_configure(gpio, 27, GPIO_INT_EDGE_TO_ACTIVE);
 
     gpio_init_callback(&button_cb, button_pressed, BIT(27));
-
     gpio_add_callback(gpio, &button_cb);
 }
 
