@@ -123,7 +123,7 @@ int led_listener(const zmk_event_t *eh)
     default:
         break;
     }
-    k_timer_start(&led_timer, K_SECONDS(3), K_SECONDS(3));
+    k_timer_start(&led_timer, K_SECONDS(3), K_SECONDS(0));
 
     return ZMK_EV_EVENT_BUBBLE;
 }

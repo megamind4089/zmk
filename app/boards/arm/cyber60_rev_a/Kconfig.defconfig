@@ -23,7 +23,7 @@ config ZMK_BLE
 	default y
 
 config ZMK_USB
-	default y
+	default n
 	
 config ZMK_BATTERY_VOLTAGE_DIVIDER
 	default y
