@@ -25,9 +25,9 @@ static int on_sensor_binding_triggered(struct zmk_behavior_binding *binding,
     struct sensor_value value;
     int err;
     uint32_t keycode;
-    LOG_DBG("DEBUG: keycode inc:0x%02X dec:0x%02X value:0x%02X", binding->param1, binding->param2, value.val1);
 
     err = sensor_channel_get(sensor, SENSOR_CHAN_ROTATION, &value);
+    LOG_DBG("DEBUG: keycode inc:0x%02X dec:0x%02X value:%d", binding->param1, binding->param2, value.val1);
 
     if (err) {
         LOG_WRN("Failed to ge sensor rotation value: %d", err);
@@ -41,6 +41,8 @@ static int on_sensor_binding_triggered(struct zmk_behavior_binding *binding,
     case -1:
         keycode = binding->param2;
         break;
+    case 0:
+        return 0;
     default:
         return -ENOTSUP;
     }
