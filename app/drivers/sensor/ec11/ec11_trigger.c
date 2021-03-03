@@ -17,7 +17,7 @@
 extern struct ec11_data ec11_driver;
 
 #include <logging/log.h>
-LOG_MODULE_DECLARE(EC11, CONFIG_SENSOR_LOG_LEVEL);
+LOG_MODULE_DECLARE(EC11, CONFIG_ZMK_LOG_LEVEL);
 
 static inline void setup_int(const struct device *dev, bool enable) {
     struct ec11_data *data = dev->data;
@@ -40,7 +40,7 @@ static void ec11_a_gpio_callback(const struct device *dev, struct gpio_callback 
                                  uint32_t pins) {
     struct ec11_data *drv_data = CONTAINER_OF(cb, struct ec11_data, a_gpio_cb);
 
-    LOG_DBG("");
+    LOG_WRN("Gpio A callback");
 
     setup_int(drv_data->dev, false);
 
@@ -55,7 +55,7 @@ static void ec11_b_gpio_callback(const struct device *dev, struct gpio_callback 
                                  uint32_t pins) {
     struct ec11_data *drv_data = CONTAINER_OF(cb, struct ec11_data, b_gpio_cb);
 
-    LOG_DBG("");
+    LOG_WRN("Gpio B callback");
 
     setup_int(drv_data->dev, false);
 
@@ -72,6 +72,7 @@ static void ec11_thread_cb(const struct device *dev) {
     drv_data->handler(dev, drv_data->trigger);
 
     setup_int(dev, true);
+    LOG_ERR("Handled & INT EN");
 }
 
 #ifdef CONFIG_EC11_TRIGGER_OWN_THREAD

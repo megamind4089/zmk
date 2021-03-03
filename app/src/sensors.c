@@ -36,7 +36,7 @@ static void zmk_sensors_trigger_handler(const struct device *dev, struct sensor_
     int err;
     struct sensors_data_item *item = CONTAINER_OF(trigger, struct sensors_data_item, trigger);
 
-    LOG_DBG("sensor %d", item->sensor_number);
+    LOG_DBG("Fetching sensor %d", item->sensor_number);
 
     err = sensor_sample_fetch(dev);
     if (err) {

@@ -16,7 +16,7 @@
 
 #include "ec11.h"
 
-LOG_MODULE_REGISTER(EC11, CONFIG_SENSOR_LOG_LEVEL);
+LOG_MODULE_REGISTER(EC11, CONFIG_ZMK_LOG_LEVEL);
 
 static int ec11_get_ab_state(const struct device *dev) {
     struct ec11_data *drv_data = dev->data;
