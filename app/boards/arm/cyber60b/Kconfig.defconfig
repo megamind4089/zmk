@@ -4,7 +4,7 @@
 if BOARD_CYBER60B
 
 config ZMK_KEYBOARD_NAME
-	default "Cyber60 Rev B"
+	default "Brutal60 HHKB"
 
 if USB
 
@@ -23,7 +23,7 @@ config ZMK_BLE
 	default y
 
 config ZMK_USB
-	default n
+	default y
 	
 config ZMK_BATTERY_VOLTAGE_DIVIDER
 	default y
