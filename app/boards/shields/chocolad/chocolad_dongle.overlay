@@ -1,0 +1,16 @@
+/*
+ * Copyright (c) 2020 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include "chocolad.dtsi"
+
+&kscan0 {
+	row-gpios
+		= <&gpio0 10  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>
+		;
+	col-gpios
+		= <&gpio0 9 GPIO_ACTIVE_HIGH>
+		;
+};
