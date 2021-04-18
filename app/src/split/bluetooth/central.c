@@ -30,9 +30,7 @@ static int stop_scan(void);
 #define POSITION_STATE_DATA_LEN 16
 // TODO TODO TODO figure out how to have array of devices. ignore name matching
 // if not using zmk peripheral.
-// #define LEFT CONFIG_ZMK_KEYBOARD_NAME##" Left"
-// #define RIGHT CONFIG_ZMK_KEYBOARD_NAME##" Right"
-char devices[][16] = {"Chocolad Left", "Chocolad Right"};
+char devices[][16] = {"left", "right"};
 #define DEVICE_COUNT sizeof(devices)/sizeof(devices[0])
 
 static struct bt_conn *peripheral_conns[DEVICE_COUNT];
@@ -211,34 +209,65 @@ static void split_central_process_connection(struct bt_conn *conn) {
 }
 
 static bool split_central_eir_found(struct bt_data *data, void *user_data) {
+    bool is_peripheral = false;
+
     // Continue parsing advertisement data if data is not device name.
-    if (data->type != BT_DATA_NAME_COMPLETE) {
+    if (data->type != BT_DATA_UUID128_ALL && data->type != BT_DATA_UUID128_SOME) {
         return true;
     }
+
+    if (data->data_len % 16 != 0U) {
+        LOG_ERR("AD malformed");
+        return true;
+    }
+
+    for (int i = 0; i < data->data_len; i += 16) {
+        struct bt_uuid_128 uuid;
+
+        if (!bt_uuid_create(&uuid.uuid, &data->data[i], 16)) {
+            LOG_ERR("Unable to load UUID");
+            continue;
+        }
+
+        if (bt_uuid_cmp(&uuid.uuid, BT_UUID_DECLARE_128(ZMK_SPLIT_BT_SERVICE_UUID))) {
+            char uuid_str[BT_UUID_STR_LEN];
+            char service_uuid_str[BT_UUID_STR_LEN];
+
+            bt_uuid_to_str(&uuid.uuid, uuid_str, sizeof(uuid_str));
+            bt_uuid_to_str(BT_UUID_DECLARE_128(ZMK_SPLIT_BT_SERVICE_UUID), service_uuid_str,
+                           sizeof(service_uuid_str));
+            LOG_DBG("UUID %s does not match split UUID: %s", log_strdup(uuid_str),
+                    log_strdup(service_uuid_str));
+            continue;
+        }
+        is_peripheral = true;
+    }
+    if (!is_peripheral) {
+        return true;
+    }
+
+    LOG_WRN("[SPLIT] Found the split service");
 
     // TODO TODO TODO ideally use whitelist. also dosn't seem like this setting
     // is actually used? we should actually store something to prevent a
     // malicious peripheral from imitating the real peripheral.
     // zmk_ble_set_peripheral_addr(addr);
 
-    int device_id = -1;
-    for (int i = 0; i < DEVICE_COUNT; i++) {
-        if (data->data_len == strlen(devices[i])) {
-            if (!memcmp(devices[i], data->data, strlen(devices[i]))) {
-                LOG_DBG("[NAME MATCH for device %i]", i);
-                device_id = i;
-                break;
-            }
+    int device_id = 0;
+    for (; device_id < DEVICE_COUNT; device_id++) {
+        if (NULL == peripheral_conns[device_id]) {
+            break;
         }
     }
 
     // Continue parsing if device name does not match.
-    if (-1 == device_id) {
+    if (device_id >= DEVICE_COUNT) {
+        LOG_ERR("[SPLIT] MAARI: Split count increase error");
         return true;
     }
 
     // Stop scanning so we can connect to the peripheral device.
-    LOG_DBG("Stopping peripheral scanning");
+    LOG_WRN("[SPLIT] Stopping peripheral scanning");
     int err = stop_scan();
     if (err) {
         return true;

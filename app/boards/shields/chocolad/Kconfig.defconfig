@@ -12,28 +12,14 @@ config ZMK_SPLIT_BLE_ROLE_CENTRAL
 config ZMK_USB
 	default y
 
-endif
-
-if SHIELD_CHOCOLAD_LEFT
-
-config ZMK_KEYBOARD_NAME
-	default "Chocolad Left"
-
-endif
-
-if SHIELD_CHOCOLAD_RIGHT
-
-config ZMK_KEYBOARD_NAME
-	default "Chocolad Right"
+config ZMK_BLE
+	default y
 
 endif
 
 if SHIELD_CHOCOLAD_LEFT || SHIELD_CHOCOLAD_RIGHT || SHIELD_CHOCOLAD_DONGLE
 
 config ZMK_SPLIT
-	default y
-
-config ZMK_BLE
 	default y
 
 endif # SHIELD_CHOCOLAD_LEFT || SHIELD_CHOCOLAD_RIGHT || SHIELD_CHOCOLAD_DONGLE
