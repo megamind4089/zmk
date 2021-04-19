@@ -28,12 +28,10 @@ static int start_scan(void);
 static int stop_scan(void);
 
 #define POSITION_STATE_DATA_LEN 16
-// TODO TODO TODO figure out how to have array of devices. ignore name matching
-// if not using zmk peripheral.
-char devices[][16] = {"left", "right"};
-#define DEVICE_COUNT sizeof(devices)/sizeof(devices[0])
+#define DEVICE_COUNT 2
 
 static struct bt_conn *peripheral_conns[DEVICE_COUNT];
+static uint8_t peripheral_position_state[DEVICE_COUNT][POSITION_STATE_DATA_LEN];
 
 const static struct bt_uuid_128 service_uuid = BT_UUID_INIT_128(ZMK_SPLIT_BT_SERVICE_UUID);
 const static struct bt_uuid_128 characteristic_uuid = BT_UUID_INIT_128(ZMK_SPLIT_BT_CHAR_POSITION_STATE_UUID);
@@ -44,6 +42,17 @@ static struct bt_gatt_subscribe_params subscribe_params;
 
 // Track whether central is currently scanning for peripherals.
 static bool is_scanning = false;
+
+static int split_central_find_device(struct bt_conn *conn) {
+    if (NULL == conn) return -1;
+
+    for (int i = 0; i < DEVICE_COUNT; i++) {
+        if (conn == peripheral_conns[i] ) {
+            return i;
+        }
+    }
+    return -1;
+}
 
 
 K_MSGQ_DEFINE(peripheral_event_msgq, sizeof(struct zmk_position_state_changed),
@@ -62,12 +71,17 @@ K_WORK_DEFINE(peripheral_event_work, peripheral_event_work_callback);
 static uint8_t split_central_notify_func(struct bt_conn *conn,
                                          struct bt_gatt_subscribe_params *params, const void *data,
                                          uint16_t length) {
-    static uint8_t position_state[POSITION_STATE_DATA_LEN];
+    int device_id = split_central_find_device(conn);
+    if (-1 == device_id) {
+        LOG_ERR("[SPLIT] Unknown device data");
+        return BT_GATT_ITER_STOP;
+    }
 
+    uint8_t *position_state = peripheral_position_state[device_id];
     uint8_t changed_positions[POSITION_STATE_DATA_LEN];
 
     if (!data) {
-        LOG_DBG("[UNSUBSCRIBED]");
+        LOG_ERR("[UNSUBSCRIBED]");
         params->value_handle = 0U;
         return BT_GATT_ITER_STOP;
     }
@@ -100,13 +114,13 @@ static int split_central_subscribe(struct bt_conn *conn) {
     int err = bt_gatt_subscribe(conn, &subscribe_params);
     switch (err) {
     case -EALREADY:
-        LOG_DBG("[ALREADY SUBSCRIBED]");
+        LOG_WRN("[ALREADY SUBSCRIBED]");
         break;
         // break;
         // bt_gatt_unsubscribe(conn, &subscribe_params);
         // return split_central_subscribe(conn);
     case 0:
-        LOG_DBG("[SUBSCRIBED]");
+        LOG_WRN("[SUBSCRIBED]");
         break;
     default:
         LOG_ERR("Subscribe failed (err %d)", err);
@@ -262,7 +276,7 @@ static bool split_central_eir_found(struct bt_data *data, void *user_data) {
 
     // Continue parsing if device name does not match.
     if (device_id >= DEVICE_COUNT) {
-        LOG_ERR("[SPLIT] MAARI: Split count increase error");
+        LOG_ERR("[SPLIT] Split count increase error");
         return true;
     }
 
@@ -370,7 +384,7 @@ static void split_central_connected(struct bt_conn *conn, uint8_t conn_err) {
     } else {
         // TODO TODO TODO I think this is called for hosts (phones, etc). skip
         // for those? do loop and ID lookup here?
-        LOG_DBG("Connected: %s", log_strdup(addr));
+        LOG_WRN("Connected: %s", log_strdup(addr));
         split_central_process_connection(conn);
     }
 
